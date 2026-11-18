@@ -1,0 +1,1047 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ExamFlow — Study Command Centre</title>
+    <style>
+        :root {
+            --bg: #f6f7fb;
+            --panel: #fff;
+            --text: #202331;
+            --muted: #81879a;
+            --line: #eceef3;
+            --orange: #f28a38;
+            --orange2: #ffb36b;
+            --soft: #fff1e5;
+            --green: #259b70;
+            --red: #dc6666;
+            --shadow: 0 12px 35px rgba(32, 35, 49, .07)
+        }
+
+        * {
+            box-sizing: border-box
+        }
+
+        body {
+            margin: 0;
+            background: var(--bg);
+            color: var(--text);
+            font-family: Inter, ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif
+        }
+
+        button,
+        input,
+        select {
+            font: inherit
+        }
+
+        button {
+            cursor: pointer;
+            border: 0
+        }
+
+        .app {
+            display: flex;
+            min-height: 100vh
+        }
+
+        .sidebar {
+            width: 250px;
+            background: #202331;
+            color: #fff;
+            padding: 25px 17px;
+            display: flex;
+            flex-direction: column;
+            gap: 28px;
+            transition: .25s;
+            flex-shrink: 0
+        }
+
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 11px;
+            padding: 0 8px
+        }
+
+        .brand-mark {
+            width: 39px;
+            height: 39px;
+            border-radius: 13px;
+            background: linear-gradient(135deg, #ffb36b, #f07828);
+            display: grid;
+            place-items: center;
+            font-weight: 900;
+            color: #fff;
+            font-size: 19px
+        }
+
+        .brand strong {
+            font-size: 17px;
+            letter-spacing: .2px
+        }
+
+        .brand small {
+            display: block;
+            color: #aeb2c1;
+            font-size: 11px;
+            margin-top: 2px
+        }
+
+        .nav-label {
+            font-size: 10px;
+            color: #8d93a5;
+            font-weight: 800;
+            letter-spacing: 1.5px;
+            padding: 0 12px;
+            margin-bottom: 8px
+        }
+
+        .nav {
+            display: grid;
+            gap: 7px
+        }
+
+        .nav button {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            background: transparent;
+            color: #bfc3cf;
+            padding: 12px;
+            border-radius: 11px;
+            text-align: left;
+            font-weight: 650;
+            font-size: 13px
+        }
+
+        .nav button.active,
+        .nav button:hover {
+            background: rgba(255, 255, 255, .1);
+            color: #fff
+        }
+
+        .nav .ico {
+            width: 20px;
+            text-align: center;
+            font-size: 16px
+        }
+
+        .side-bottom {
+            margin-top: auto;
+            border: 1px solid #3a3e4e;
+            border-radius: 14px;
+            padding: 14px;
+            color: #c5c8d2;
+            font-size: 12px;
+            line-height: 1.6
+        }
+
+        .side-bottom b {
+            color: #fff;
+            display: block;
+            margin-bottom: 4px
+        }
+
+        .main {
+            flex: 1;
+            min-width: 0;
+            padding: 27px 34px 45px;
+            max-width: 1600px;
+            margin: 0 auto;
+            width: 100%
+        }
+
+        .topbar {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 25px;
+            gap: 14px
+        }
+
+        .top-left {
+            display: flex;
+            align-items: center;
+            gap: 12px
+        }
+
+        .menu {
+            display: none;
+            background: var(--panel);
+            border: 1px solid var(--line);
+            width: 42px;
+            height: 42px;
+            border-radius: 12px
+        }
+
+        .eyebrow {
+            font-size: 11px;
+            color: var(--orange);
+            font-weight: 800;
+            letter-spacing: 1.4px;
+            text-transform: uppercase
+        }
+
+        .topbar h1 {
+            font-size: 25px;
+            margin: 4px 0 0;
+            letter-spacing: -.7px
+        }
+
+        .date-chip {
+            background: var(--panel);
+            border: 1px solid var(--line);
+            padding: 10px 14px;
+            border-radius: 12px;
+            font-size: 12px;
+            color: var(--muted);
+            font-weight: 650
+        }
+
+        .view {
+            display: none
+        }
+
+        .view.active {
+            display: block
+        }
+
+        .hero {
+            background: linear-gradient(115deg, #292c3c, #3a3e50);
+            border-radius: 22px;
+            padding: 26px 29px;
+            color: white;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 20px;
+            position: relative;
+            overflow: hidden;
+            box-shadow: var(--shadow)
+        }
+
+        .hero:after {
+            content: "";
+            position: absolute;
+            width: 230px;
+            height: 230px;
+            border: 38px solid rgba(255, 255, 255, .045);
+            border-radius: 50%;
+            right: 8%;
+            top: -125px
+        }
+
+        .hero h2 {
+            font-size: 23px;
+            margin: 0 0 8px;
+            letter-spacing: -.5px
+        }
+
+        .hero p {
+            color: #c9ccda;
+            margin: 0;
+            font-size: 13px;
+            line-height: 1.6;
+            max-width: 550px
+        }
+
+        .hero .countdown {
+            z-index: 1;
+            text-align: center;
+            min-width: 110px
+        }
+
+        .countdown strong {
+            font-size: 34px;
+            color: #ffb36b;
+            display: block
+        }
+
+        .countdown span {
+            font-size: 10px;
+            letter-spacing: 1px;
+            color: #d2d4df;
+            text-transform: uppercase
+        }
+
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 14px;
+            margin: 18px 0
+        }
+
+        .stat,
+        .card {
+            background: var(--panel);
+            border: 1px solid var(--line);
+            border-radius: 17px;
+            box-shadow: var(--shadow)
+        }
+
+        .stat {
+            padding: 17px 18px
+        }
+
+        .stat .label {
+            font-size: 11px;
+            color: var(--muted);
+            font-weight: 700
+        }
+
+        .stat strong {
+            font-size: 25px;
+            display: block;
+            margin: 8px 0 3px;
+            letter-spacing: -.8px
+        }
+
+        .stat small {
+            font-size: 11px;
+            color: var(--muted)
+        }
+
+        .stat .symbol {
+            float: right;
+            width: 34px;
+            height: 34px;
+            border-radius: 11px;
+            background: var(--soft);
+            display: grid;
+            place-items: center;
+            color: var(--orange)
+        }
+
+        .grid-two {
+            display: grid;
+            grid-template-columns: 1.2fr .8fr;
+            gap: 17px
+        }
+
+        .card {
+            padding: 20px
+        }
+
+        .card-head {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+            margin-bottom: 17px
+        }
+
+        .card h3 {
+            margin: 0;
+            font-size: 15px;
+            letter-spacing: -.2px
+        }
+
+        .sub {
+            font-size: 11px;
+            color: var(--muted);
+            margin-top: 5px
+        }
+
+        .progress-list {
+            display: grid;
+            gap: 16px
+        }
+
+        .progress-row {
+            display: grid;
+            grid-template-columns: 92px 1fr 43px;
+            align-items: center;
+            gap: 12px;
+            font-size: 12px
+        }
+
+        .progress-row .subject {
+            font-weight: 750
+        }
+
+        .track {
+            height: 9px;
+            background: #f0f1f5;
+            border-radius: 20px;
+            overflow: hidden
+        }
+
+        .fill {
+            height: 100%;
+            border-radius: 20px;
+            background: linear-gradient(90deg, #f07828, #ffb36b);
+            transition: width .25s
+        }
+
+        .percent {
+            text-align: right;
+            color: var(--muted);
+            font-size: 11px;
+            font-weight: 750;
+            font-variant-numeric: tabular-nums
+        }
+
+        .exam-list {
+            display: grid;
+            gap: 11px
+        }
+
+        .exam {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 10px 11px;
+            border: 1px solid var(--line);
+            border-radius: 12px
+        }
+
+        .exam-date {
+            width: 43px;
+            height: 44px;
+            border-radius: 11px;
+            background: var(--soft);
+            color: #d66b21;
+            display: grid;
+            place-items: center;
+            font-weight: 850;
+            font-size: 14px;
+            line-height: 1.1;
+            text-align: center
+        }
+
+        .exam-date small {
+            font-size: 9px
+        }
+
+        .exam-info {
+            flex: 1
+        }
+
+        .exam-info b {
+            display: block;
+            font-size: 12px
+        }
+
+        .exam-info small {
+            font-size: 10px;
+            color: var(--muted)
+        }
+
+        .exam-tag {
+            font-size: 10px;
+            color: var(--orange);
+            font-weight: 800
+        }
+
+        .toolbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 12px;
+            margin: 19px 0 14px;
+            flex-wrap: wrap
+        }
+
+        .toolbar h2 {
+            font-size: 19px;
+            margin: 0
+        }
+
+        .toolbar p {
+            font-size: 12px;
+            color: var(--muted);
+            margin: 5px 0 0
+        }
+
+        .controls {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap
+        }
+
+        .select,
+        .field {
+            border: 1px solid var(--line);
+            background: var(--panel);
+            border-radius: 10px;
+            padding: 10px 12px;
+            color: var(--text);
+            outline: none;
+            font-size: 12px
+        }
+
+        .btn {
+            background: var(--orange);
+            color: #fff;
+            border-radius: 10px;
+            padding: 10px 14px;
+            font-size: 12px;
+            font-weight: 750;
+            box-shadow: 0 5px 13px rgba(242, 138, 56, .18)
+        }
+
+        .btn:hover {
+            background: #df7628
+        }
+
+        .btn.secondary {
+            background: var(--soft);
+            color: #c96620;
+            box-shadow: none
+        }
+
+        .btn.ghost {
+            background: #f2f3f7;
+            color: #60677a;
+            box-shadow: none
+        }
+
+        .btn.danger {
+            background: #fff0f0;
+            color: #c45151;
+            box-shadow: none
+        }
+
+        .check-layout {
+            display: grid;
+            grid-template-columns: 1fr 300px;
+            gap: 16px;
+            align-items: start
+        }
+
+        .task-groups {
+            display: grid;
+            gap: 13px
+        }
+
+        .task-group {
+            background: var(--panel);
+            border: 1px solid var(--line);
+            border-radius: 16px;
+            overflow: hidden;
+            box-shadow: var(--shadow)
+        }
+
+        .group-title {
+            padding: 14px 17px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid var(--line)
+        }
+
+        .group-title b {
+            font-size: 13px
+        }
+
+        .group-title small {
+            font-size: 10px;
+            color: var(--muted)
+        }
+
+        .task {
+            display: flex;
+            align-items: flex-start;
+            gap: 11px;
+            padding: 12px 17px;
+            border-bottom: 1px solid #f2f3f6
+        }
+
+        .task:last-child {
+            border-bottom: 0
+        }
+
+        .task input {
+            accent-color: var(--orange);
+            width: 16px;
+            height: 16px;
+            margin: 2px 0 0;
+            flex-shrink: 0
+        }
+
+        .task-text {
+            font-size: 12px;
+            line-height: 1.45;
+            flex: 1
+        }
+
+        .task.done .task-text {
+            text-decoration: line-through;
+            color: #9ba0ad
+        }
+
+        .task small {
+            display: block;
+            color: #a0a5b1;
+            font-size: 10px;
+            margin-top: 3px
+        }
+
+        .task .remove {
+            background: transparent;
+            color: #b6bac5;
+            font-size: 17px;
+            padding: 0 3px
+        }
+
+        .task .remove:hover {
+            color: var(--red)
+        }
+
+        .add-card {
+            position: sticky;
+            top: 15px
+        }
+
+        .add-card h3 {
+            margin-bottom: 5px
+        }
+
+        .form-stack {
+            display: grid;
+            gap: 10px;
+            margin-top: 15px
+        }
+
+        .form-stack label {
+            font-size: 10px;
+            color: var(--muted);
+            font-weight: 750
+        }
+
+        .form-stack input,
+        .form-stack select {
+            width: 100%;
+            margin-top: 5px
+        }
+
+        .form-stack .btn {
+            width: 100%;
+            margin-top: 3px
+        }
+
+        .hint {
+            font-size: 10px;
+            color: var(--muted);
+            line-height: 1.5;
+            margin-top: 12px
+        }
+
+        .timer-wrap {
+            display: grid;
+            grid-template-columns: 1fr 330px;
+            gap: 17px
+        }
+
+        .timer-card {
+            text-align: center;
+            padding: 32px 20px
+        }
+
+        .timer-mode {
+            display: inline-flex;
+            background: var(--soft);
+            color: #d36e25;
+            padding: 7px 12px;
+            border-radius: 30px;
+            font-size: 10px;
+            font-weight: 850;
+            letter-spacing: 1px;
+            text-transform: uppercase
+        }
+
+        .timer-display {
+            font-size: 76px;
+            font-weight: 800;
+            letter-spacing: -4px;
+            font-variant-numeric: tabular-nums;
+            margin: 20px 0 6px
+        }
+
+        .timer-caption {
+            color: var(--muted);
+            font-size: 12px
+        }
+
+        .timer-actions {
+            display: flex;
+            justify-content: center;
+            gap: 9px;
+            margin-top: 23px;
+            flex-wrap: wrap
+        }
+
+        .timer-actions .btn {
+            min-width: 105px
+        }
+
+        .timer-settings {
+            display: grid;
+            gap: 14px
+        }
+
+        .timer-settings label {
+            font-size: 11px;
+            color: var(--muted);
+            font-weight: 750
+        }
+
+        .timer-settings input {
+            width: 100%;
+            margin-top: 6px
+        }
+
+        .timer-settings .field {
+            width: 100%
+        }
+
+        .session-note {
+            margin-top: 20px;
+            padding: 12px;
+            background: #f8f8fb;
+            border-radius: 11px;
+            color: var(--muted);
+            font-size: 11px;
+            line-height: 1.5
+        }
+
+        .empty {
+            padding: 24px;
+            text-align: center;
+            color: var(--muted);
+            font-size: 12px
+        }
+
+        .footer-note {
+            color: var(--muted);
+            font-size: 10px;
+            text-align: center;
+            margin-top: 22px
+        }
+
+        .toast {
+            position: fixed;
+            bottom: 22px;
+            right: 22px;
+            background: #252838;
+            color: #fff;
+            padding: 12px 16px;
+            border-radius: 11px;
+            font-size: 12px;
+            box-shadow: var(--shadow);
+            opacity: 0;
+            transform: translateY(10px);
+            transition: .25s;
+            pointer-events: none;
+            z-index: 20
+        }
+
+        .toast.show {
+            opacity: 1;
+            transform: translateY(0)
+        }
+
+        @media(max-width:1000px) {
+            .stats {
+                grid-template-columns: repeat(2, 1fr)
+            }
+
+            .check-layout,
+            .timer-wrap {
+                grid-template-columns: 1fr
+            }
+
+            .add-card {
+                position: static
+            }
+
+            .grid-two {
+                grid-template-columns: 1fr
+            }
+        }
+
+        @media(max-width:720px) {
+            .sidebar {
+                position: fixed;
+                z-index: 15;
+                left: -270px;
+                top: 0;
+                bottom: 0;
+                box-shadow: var(--shadow)
+            }
+
+            .sidebar.open {
+                left: 0
+            }
+
+            .menu {
+                display: block
+            }
+
+            .main {
+                padding: 18px 14px 35px
+            }
+
+            .topbar h1 {
+                font-size: 20px
+            }
+
+            .date-chip {
+                display: none
+            }
+
+            .hero {
+                padding: 22px;
+                align-items: flex-start
+            }
+
+            .hero h2 {
+                font-size: 19px
+            }
+
+            .hero .countdown {
+                min-width: 65px
+            }
+
+            .countdown strong {
+                font-size: 27px
+            }
+
+            .stats {
+                gap: 9px
+            }
+
+            .stat {
+                padding: 14px
+            }
+
+            .stat strong {
+                font-size: 22px
+            }
+
+            .progress-row {
+                grid-template-columns: 78px 1fr 38px
+            }
+
+            .timer-display {
+                font-size: 61px
+            }
+
+            .card {
+                padding: 16px
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="app">
+        <aside class="sidebar" id="sidebar">
+            <div class="brand">
+                <div class="brand-mark">E</div>
+                <div><strong>ExamFlow</strong><small>your study command centre</small></div>
+            </div>
+            <div>
+                <div class="nav-label">WORKSPACE</div>
+                <nav class="nav">
+                    <button class="active" data-view="overview"><span class="ico">▦</span>Overview</button>
+                    <button data-view="checklist"><span class="ico">☑</span>My checklist</button>
+                    <button data-view="timer"><span class="ico">◷</span>Focus timer</button>
+                </nav>
+            </div>
+            <div class="side-bottom"><b>Exam mission</b>First paper: English · 25 November 2026<br>Target: understand,
+                recall and write — not just read.</div>
+        </aside>
+        <main class="main">
+            <header class="topbar">
+                <div class="top-left"><button class="menu" id="menuBtn" aria-label="Toggle navigation">☰</button>
+                    <div>
+                        <div class="eyebrow">EXAM SEASON · NOV–DEC 2026</div>
+                        <h1 id="pageTitle">Your preparation overview</h1>
+                    </div>
+                </div>
+                <div class="date-chip" id="todayLabel">18 NOVEMBER 2026</div>
+            </header>
+
+            <section class="view active" id="overview">
+                <div class="hero">
+                    <div>
+                        <h2>Small focused steps. Strong exam results.</h2>
+                        <p>Your Class VII exam dashboard. Tick completed work, add your own tasks and watch your subject
+                            progress update automatically.</p>
+                    </div>
+                    <div class="countdown"><strong id="daysLeft">7</strong><span>days to English</span></div>
+                </div>
+                <div class="stats">
+                    <div class="stat"><span class="symbol">✓</span>
+                        <div class="label">TASKS COMPLETED</div><strong id="doneStat">0</strong><small id="taskStat">out
+                            of 0 tasks</small>
+                    </div>
+                    <div class="stat"><span class="symbol">▤</span>
+                        <div class="label">OVERALL PROGRESS</div><strong id="overallStat">0%</strong><small>across all
+                            subjects</small>
+                    </div>
+                    <div class="stat"><span class="symbol">◎</span>
+                        <div class="label">MOST PREPARED</div><strong id="topSubject"
+                            style="font-size:19px">—</strong><small>based on checklist completion</small>
+                    </div>
+                    <div class="stat"><span class="symbol">⚑</span>
+                        <div class="label">NEXT EXAM</div><strong id="nextExam"
+                            style="font-size:19px">English</strong><small id="nextExamDate">25 November</small>
+                    </div>
+                </div>
+                <div class="grid-two">
+                    <div class="card">
+                        <div class="card-head">
+                            <div>
+                                <h3>Subject-wise progress</h3>
+                                <div class="sub">Updates instantly when you tick or add tasks</div>
+                            </div><button class="btn secondary" onclick="showView('checklist')">Update checklist
+                                ↗</button>
+                        </div>
+                        <div class="progress-list" id="chart"></div>
+                    </div>
+                    <div class="card">
+                        <div class="card-head">
+                            <div>
+                                <h3>Examination schedule</h3>
+                                <div class="sub">Class VII · 40 marks each</div>
+                            </div>
+                        </div>
+                        <div class="exam-list" id="examList"></div>
+                    </div>
+                </div>
+                <div class="footer-note">Your checklist is saved in this browser on this device.</div>
+            </section>
+
+            <section class="view" id="checklist">
+                <div class="toolbar">
+                    <div>
+                        <h2>Preparation checklist</h2>
+                        <p>Preloaded from your current preparation status and study strategy.</p>
+                    </div>
+                    <div class="controls"><select class="select" id="filterSubject">
+                            <option value="all">All subjects</option>
+                        </select><button class="btn ghost" id="exportBtn">Export data</button></div>
+                </div>
+                <div class="check-layout">
+                    <div class="task-groups" id="taskGroups"></div>
+                    <div class="card add-card">
+                        <h3>Add a custom task</h3>
+                        <div class="sub">Add anything missing from your school syllabus.</div>
+                        <form class="form-stack" id="addForm">
+                            <label>SUBJECT<select class="field" id="newSubject"></select></label>
+                            <label>TASK NAME<input class="field" id="newTask" maxlength="110"
+                                    placeholder="e.g. Revise chapter 2 questions" required></label>
+                            <label>OPTIONAL NOTE<input class="field" id="newNote" maxlength="90"
+                                    placeholder="e.g. Practise long answers"></label>
+                            <button class="btn" type="submit">＋ Add to checklist</button>
+                        </form>
+                        <div class="hint">Tip: Split large chapters into small tasks. Your progress chart counts each
+                            task equally.</div>
+                    </div>
+                </div>
+            </section>
+
+            <section class="view" id="timer">
+                <div class="toolbar">
+                    <div>
+                        <h2>Focus timer</h2>
+                        <p>Work in focused blocks, then take a proper break.</p>
+                    </div>
+                </div>
+                <div class="timer-wrap">
+                    <div class="card timer-card">
+                        <div class="timer-mode" id="timerMode">FOCUS SESSION</div>
+                        <div class="timer-display" id="timerDisplay">25:00</div>
+                        <div class="timer-caption" id="timerCaption">One focused session. One clear target.</div>
+                        <div class="timer-actions"><button class="btn" id="startBtn">Start focus</button><button
+                                class="btn ghost" id="pauseBtn">Pause</button><button class="btn ghost"
+                                id="resetBtn">Reset</button></div>
+                        <div class="session-note" id="sessionNote">Choose a task before starting. Keep your phone and
+                            unrelated tabs away during the session.</div>
+                    </div>
+                    <div class="card timer-settings">
+                        <div>
+                            <h3>Timer settings</h3>
+                            <div class="sub">Set durations in minutes</div>
+                        </div><label>FOCUS DURATION<input class="field" type="number" id="focusMinutes" min="1"
+                                max="180" value="25"></label><label>BREAK DURATION<input class="field" type="number"
+                                id="breakMinutes" min="1" max="60" value="5"></label><label>WHAT ARE YOU WORKING
+                            ON?<select class="field" id="timerSubject"></select></label><button class="btn secondary"
+                            id="applyTimer">Apply settings</button>
+                        <div class="session-note">When a session ends, the timer will alert you. Switch to a break
+                            manually, then start the next focus session.</div>
+                    </div>
+                </div>
+            </section>
+            <div class="footer-note">ExamFlow · One-file study planner · Progress is based on tasks you create and
+                complete.</div>
+        </main>
+    </div>
+    <div class="toast" id="toast"></div>
+    <script>
+        const subjects = ["English", "AI", "Science", "SST", "Mathematics", "Hindi", "Sanskrit"];
+        const exams = [["English", "25", "NOV", "Wednesday"], ["AI", "26", "NOV", "Thursday"], ["Science", "27", "NOV", "Friday"], ["SST", "28", "NOV", "Saturday"], ["Mathematics", "30", "NOV", "Monday"], ["Hindi", "01", "DEC", "Tuesday"], ["Sanskrit", "02", "DEC", "Wednesday"]];
+        const KEY = "examflow_class7_nov2026_v1";
+        const seed = [
+            ["English", "Grammar: identify and revise all prescribed topics", false], ["English", "Grammar: complete workbook and textbook exercises", false], ["English", "Vocabulary and word meanings", false], ["English", "Literature: chapter 1 — read, recall and write answers", false], ["English", "Literature: chapter 2 — read, recall and write answers", false], ["English", "Literature: chapter 3 — read, recall and write answers", false], ["English", "Writing section: learn formats and practise", false], ["English", "Complete one timed 40-mark mock paper", false],
+            ["AI", "Check the prescribed AI syllabus and list all topics", false], ["AI", "Study all prescribed theory and key terms", false], ["AI", "Complete workbook / textbook questions", false], ["AI", "Revise and attempt a practice paper", false],
+            ["Science", "Workbook: chapter 1 — completed baseline", true], ["Science", "Finish remaining workbook exercises for chapters 2 and 3", false], ["Science", "NCERT questions: chapter 1", false], ["Science", "NCERT questions: chapter 2", false], ["Science", "NCERT questions: chapter 3", false], ["Science", "Revise definitions, concepts and diagrams", false], ["Science", "Attempt one timed practice paper", false],
+            ["SST", "Check the prescribed chapters and make a chapter list", false], ["SST", "Read and understand every prescribed chapter", false], ["SST", "Learn key terms, dates and important names", false], ["SST", "Practise short and long answers", false], ["SST", "Maps / diagrams if included in your syllabus", false], ["SST", "Attempt one timed practice paper", false],
+            ["Mathematics", "Initial practice: solve 5 questions per chapter (baseline)", true], ["Mathematics", "Revise all prescribed formulas and methods", false], ["Mathematics", "Complete remaining textbook / workbook exercises", false], ["Mathematics", "Re-solve incorrect and difficult questions", false], ["Mathematics", "Attempt one timed 40-mark mock paper", false],
+            ["Hindi", "Grammar revision — completed baseline", true], ["Hindi", "Literature: chapter 1 — revise and practise answers", false], ["Hindi", "Literature: chapter 2 — learn and practise answers", false], ["Hindi", "Literature: chapter 3 — learn and practise answers", false], ["Hindi", "NCERT questions for all prescribed chapters", false], ["Hindi", "Workbook literature exercises", false], ["Hindi", "Writing section: formats and practice", false], ["Hindi", "Attempt one timed practice paper", false],
+            ["Sanskrit", "All word meanings — completed baseline", true], ["Sanskrit", "NCERT questions: chapter 1 — completed baseline", true], ["Sanskrit", "NCERT questions: chapters 2 and 3", false], ["Sanskrit", "Finish remaining literature workbook exercises", false], ["Sanskrit", "Grammar workbook exercises", false], ["Sanskrit", "Writing section practice", false], ["Sanskrit", "Revise all chapters and attempt a practice paper", false]
+        ];
+        let tasks, timerInterval = null, remaining = 1500, mode = "focus", running = false;
+        function id() { return Date.now().toString(36) + Math.random().toString(36).slice(2, 7) }
+        function load() { try { const raw = localStorage.getItem(KEY); if (raw) { const parsed = JSON.parse(raw); if (Array.isArray(parsed.tasks)) return parsed.tasks } } catch (e) { } return seed.map(x => ({ id: id(), subject: x[0], text: x[1], note: "", done: x[2], custom: false })) }
+        tasks = load();
+        function save() { try { localStorage.setItem(KEY, JSON.stringify({ tasks })) } catch (e) { toast("Could not save. Browser storage may be unavailable.") } }
+        function toast(msg) { const el = document.getElementById("toast"); el.textContent = msg; el.classList.add("show"); setTimeout(() => el.classList.remove("show"), 2300) }
+        function stats() { const done = tasks.filter(t => t.done).length, total = tasks.length; return { done, total, pct: total ? Math.round(done / total * 100) : 0 } }
+        function bySubject(s) { const list = tasks.filter(t => t.subject === s); const done = list.filter(t => t.done).length; return { done, total: list.length, pct: list.length ? Math.round(done / list.length * 100) : 0 } }
+        function renderOverview() {
+            const st = stats(); document.getElementById("doneStat").textContent = st.done; document.getElementById("taskStat").textContent = "out of " + st.total + " tasks"; document.getElementById("overallStat").textContent = st.pct + "%";
+            const best = subjects.map(s => ({ s, ...bySubject(s) })).filter(x => x.total).sort((a, b) => b.pct - a.pct)[0]; document.getElementById("topSubject").textContent = best ? best.s : "—";
+            const now = new Date(); const target = new Date(2026, 10, 25); const diff = Math.max(0, Math.ceil((target - new Date(now.getFullYear(), now.getMonth(), now.getDate())) / 86400000)); document.getElementById("daysLeft").textContent = diff;
+            const next = exams.find(e => new Date(2026, e[2] === "NOV" ? 10 : 11, Number(e[1])) >= new Date(now.getFullYear(), now.getMonth(), now.getDate())) || exams[0]; document.getElementById("nextExam").textContent = next[0]; document.getElementById("nextExamDate").textContent = next[1] + " " + next[2] + " · " + next[3];
+            document.getElementById("chart").innerHTML = subjects.map(s => { const p = bySubject(s); return `<div class="progress-row"><span class="subject">${s}</span><div class="track"><div class="fill" style="width:${p.pct}%"></div></div><span class="percent">${p.pct}%</span></div>` }).join("");
+            document.getElementById("examList").innerHTML = exams.map(e => `<div class="exam"><div class="exam-date">${e[1]}<small>${e[2]}</small></div><div class="exam-info"><b>${e[0]}</b><small>${e[3]} · 40 marks</small></div><span class="exam-tag">${bySubject(e[0]).pct}% ready</span></div>`).join("");
+        }
+        function renderChecklist() {
+            const filter = document.getElementById("filterSubject").value;
+            const list = subjects.filter(s => filter === "all" || s === filter);
+            document.getElementById("taskGroups").innerHTML = list.map(s => { const group = tasks.filter(t => t.subject === s); if (!group.length) return ""; const d = group.filter(t => t.done).length; return `<div class="task-group"><div class="group-title"><b>${s}</b><small>${d} / ${group.length} completed · ${Math.round(d / group.length * 100)}%</small></div>${group.map(t => `<div class="task ${t.done ? "done" : ""}"><input type="checkbox" aria-label="Complete task" data-check="${t.id}" ${t.done ? "checked" : ""}><div class="task-text">${escapeHtml(t.text)}${t.note ? `<small>${escapeHtml(t.note)}</small>` : ""}</div>${t.custom ? `<button class="remove" title="Delete task" data-delete="${t.id}">×</button>` : ""}</div>`).join("")}</div>` }).join("") || '<div class="card empty">No tasks yet. Add your first task.</div>';
+            document.querySelectorAll("[data-check]").forEach(el => el.addEventListener("change", () => { const t = tasks.find(x => x.id === el.dataset.check); if (t) { t.done = el.checked; save(); renderAll() } }));
+            document.querySelectorAll("[data-delete]").forEach(el => el.addEventListener("click", () => { tasks = tasks.filter(t => t.id !== el.dataset.delete); save(); renderAll(); toast("Task deleted") }));
+        }
+        function escapeHtml(s) { return String(s).replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c])) }
+        function renderAll() { renderOverview(); renderChecklist() }
+        function showView(name) { document.querySelectorAll(".view").forEach(v => v.classList.toggle("active", v.id === name)); document.querySelectorAll(".nav button").forEach(b => b.classList.toggle("active", b.dataset.view === name)); document.getElementById("pageTitle").textContent = ({ overview: "Your preparation overview", checklist: "Your preparation checklist", timer: "Focus timer" })[name]; document.getElementById("sidebar").classList.remove("open") }
+        document.querySelectorAll(".nav button").forEach(b => b.addEventListener("click", () => showView(b.dataset.view)));
+        document.getElementById("menuBtn").addEventListener("click", () => document.getElementById("sidebar").classList.toggle("open"));
+        document.getElementById("filterSubject").innerHTML = '<option value="all">All subjects</option>' + subjects.map(s => `<option>${s}</option>`).join("");
+        document.getElementById("newSubject").innerHTML = subjects.map(s => `<option>${s}</option>`).join("");
+        document.getElementById("timerSubject").innerHTML = subjects.map(s => `<option>${s}</option>`).join("");
+        document.getElementById("filterSubject").addEventListener("change", renderChecklist);
+        document.getElementById("addForm").addEventListener("submit", e => { e.preventDefault(); const text = document.getElementById("newTask").value.trim(); if (!text) return; tasks.push({ id: id(), subject: document.getElementById("newSubject").value, text, note: document.getElementById("newNote").value.trim(), done: false, custom: true }); save(); e.target.reset(); renderAll(); toast("Task added. Progress chart updated.") });
+        document.getElementById("exportBtn").addEventListener("click", () => { const blob = new Blob([JSON.stringify({ tasks }, null, 2)], { type: "application/json" }); const url = URL.createObjectURL(blob); const a = document.createElement("a"); a.href = url; a.download = "examflow-progress.json"; a.click(); URL.revokeObjectURL(url); toast("Progress exported") });
+        document.getElementById("todayLabel").textContent = new Intl.DateTimeFormat("en-IN", { day: "2-digit", month: "long", year: "numeric" }).format(new Date()).toUpperCase();
+
+        function updateTimer() { const m = Math.floor(remaining / 60), s = remaining % 60; document.getElementById("timerDisplay").textContent = String(m).padStart(2, "0") + ":" + String(s).padStart(2, "0"); }
+        function stopTimer() { if (timerInterval) clearInterval(timerInterval); timerInterval = null; running = false; document.getElementById("startBtn").textContent = mode === "focus" ? "Start focus" : "Start break" }
+        function startTimer() { if (running) return; running = true; document.getElementById("startBtn").textContent = "Running…"; timerInterval = setInterval(() => { remaining--; updateTimer(); if (remaining <= 0) { stopTimer(); document.getElementById("timerCaption").textContent = mode === "focus" ? "Focus session complete. Take a break." : "Break complete. Ready for another focus session."; document.getElementById("sessionNote").textContent = "Session finished. Switch the mode and start the next block when ready."; try { const ctx = new (window.AudioContext || window.webkitAudioContext)(); const osc = ctx.createOscillator(), gain = ctx.createGain(); osc.connect(gain); gain.connect(ctx.destination); osc.frequency.value = 740; gain.gain.value = .12; osc.start(); osc.stop(ctx.currentTime + .35) } catch (e) { } toast("Timer finished!") } }, 1000) }
+        function setMode(next) { stopTimer(); mode = next; const mins = Number(document.getElementById(next === "focus" ? "focusMinutes" : "breakMinutes").value) || (next === "focus" ? 25 : 5); remaining = mins * 60; document.getElementById("timerMode").textContent = next === "focus" ? "FOCUS SESSION" : "BREAK SESSION"; document.getElementById("timerCaption").textContent = next === "focus" ? "One focused session. One clear target." : "Step away from your desk and recharge."; document.getElementById("startBtn").textContent = next === "focus" ? "Start focus" : "Start break"; updateTimer() }
+        document.getElementById("startBtn").addEventListener("click", startTimer);
+        document.getElementById("pauseBtn").addEventListener("click", () => { stopTimer(); document.getElementById("timerCaption").textContent = "Timer paused. Resume when ready." });
+        document.getElementById("resetBtn").addEventListener("click", () => setMode(mode));
+        document.getElementById("applyTimer").addEventListener("click", () => { const f = Number(document.getElementById("focusMinutes").value), b = Number(document.getElementById("breakMinutes").value); if (!Number.isInteger(f) || f < 1 || f > 180 || !Number.isInteger(b) || b < 1 || b > 60) { toast("Enter valid timer durations."); return } setMode(mode); document.getElementById("sessionNote").textContent = "Current focus subject: " + document.getElementById("timerSubject").value + ". Your selected durations have been applied."; toast("Timer settings applied") });
+        renderAll(); updateTimer();
+    </script>
+</body>
+
+</html>
